@@ -1,1 +1,19 @@
- 
+# IDE files
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+vendor/
+
+# Environment files
+.env
+config.php
+
+# Cache and logs
+*.log
+.cache/
+
+# System files
+.DS_Store
+Thumbs.db 
