@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicție Cocă Pizza</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="container">
+            <header class="app-header">
+                <h1><i class="fas fa-pizza-slice"></i> Predicție Cocă Pizza</h1>
+            </header>
+            
+            <div id="notification" class="notification hidden"></div>
+            
+            <div class="tabs">
+                <button class="tab-button active" data-tab="input">
+                    <i class="fas fa-edit"></i> Introducere Date
+                </button>
+                <button class="tab-button" data-tab="history">
+                    <i class="fas fa-history"></i> Istoric
+                </button>
+                <button class="tab-button" data-tab="predictions">
+                    <i class="fas fa-chart-line"></i> Predicții
+                </button>
+            </div>
+            
+            <div id="input" class="tab-content card active">
+                <h2>Introducere Date Vânzări</h2>
+                <div class="selectors-wrapper">
+                    <div class="date-selector">
+                        <label>
+                            <i class="fas fa-calendar-day"></i> Ziua:
+                            <select id="daySelector">
+                                <option value="1">Luni</option>
+                                <option value="2">Marți</option>
+                                <option value="3">Miercuri</option>
+                                <option value="4">Joi</option>
+                                <option value="5">Vineri</option>
+                                <option value="6">Sâmbătă</option>
+                                <option value="0">Duminică</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="week-selector">
+                        <label>
+                            <i class="fas fa-calendar-week"></i> Săptămâna:
+                            <select id="weekSelector">
+                                <option value="1">Săptămâna anterioară</option>
+                                <option value="2">2 săptămâni în urmă</option>
+                                <option value="3">3 săptămâni în urmă</option>
+                                <option value="4">4 săptămâni în urmă</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="submit" form="salesForm" class="action-button primary-button">
+                            <span class="button-text"><i class="fas fa-save"></i> Salvează</span>
+                            <span class="loader hidden"></span>
+                        </button>
+                        <button id="resetButton" class="action-button reset-button">
+                            <span class="button-text"><i class="fas fa-trash-alt"></i> Resetează</span>
+                            <span class="loader hidden"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <form id="salesForm" class="compact-form">
+                    <div class="dough-types-wrapper">
+                        <div class="dough-type card-inner">
+                            <h3>Pan Pizza</h3>
+                            <div class="size-inputs">
+                                <label>S: <input type="number" name="pan-small" min="0"></label>
+                                <label>M: <input type="number" name="pan-medium" min="0"></label>
+                                <label>L: <input type="number" name="pan-large" min="0"></label>
+                                <label>XL: <input type="number" name="pan-xlarge" min="0"></label>
+                            </div>
+                        </div>
+
+                        <div class="dough-type card-inner">
+                            <h3>Stuffed Crust</h3>
+                            <div class="size-inputs">
+                                <label>M: <input type="number" name="stuffed-medium" min="0"></label>
+                                <label>L: <input type="number" name="stuffed-large" min="0"></label>
+                                <label>XL: <input type="number" name="stuffed-xlarge" min="0"></label>
+                            </div>
+                        </div>
+
+                        <div class="dough-type card-inner">
+                            <h3>San Francisco</h3>
+                            <div class="size-inputs">
+                                <label>S: <input type="number" name="sf-small" min="0"></label>
+                                <label>M: <input type="number" name="sf-medium" min="0"></label>
+                                <label>L: <input type="number" name="sf-large" min="0"></label>
+                                <label>XL: <input type="number" name="sf-xlarge" min="0"></label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="history" class="tab-content card">
+                <h2>Date Istorice</h2>
+                <div class="data-status">
+                    <span id="lastUpdate" class="last-update"></span>
+                    <button id="refreshData" class="refresh-button">
+                        <span class="button-text"><i class="fas fa-sync-alt"></i> Reîmprospătează</span>
+                        <span class="loader hidden"></span>
+                    </button>
+                </div>
+                <div class="history-controls">
+                    <div class="history-filters">
+                        <select id="historyDayFilter">
+                            <option value="all">Toate zilele</option>
+                            <option value="1">Luni</option>
+                            <option value="2">Marți</option>
+                            <option value="3">Miercuri</option>
+                            <option value="4">Joi</option>
+                            <option value="5">Vineri</option>
+                            <option value="6">Sâmbătă</option>
+                            <option value="0">Duminică</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="historicalDisplay"></div>
+                
+                <!-- Template pentru editare -->
+                <div id="editModal" class="modal hidden">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Editare Date</h3>
+                            <button class="close-modal">&times;</button>
+                        </div>
+                        <form id="editForm" class="compact-form">
+                            <div class="edit-date-info">
+                                <span class="edit-date"></span>
+                            </div>
+                            <div class="dough-types-wrapper">
+                                <div class="dough-type card-inner">
+                                    <h3>Pan Pizza</h3>
+                                    <div class="size-inputs">
+                                        <label>S: <input type="number" name="pan-small" min="0"></label>
+                                        <label>M: <input type="number" name="pan-medium" min="0"></label>
+                                        <label>L: <input type="number" name="pan-large" min="0"></label>
+                                        <label>XL: <input type="number" name="pan-xlarge" min="0"></label>
+                                    </div>
+                                </div>
+                                <div class="dough-type card-inner">
+                                    <h3>Stuffed Crust</h3>
+                                    <div class="size-inputs">
+                                        <label>M: <input type="number" name="stuffed-medium" min="0"></label>
+                                        <label>L: <input type="number" name="stuffed-large" min="0"></label>
+                                        <label>XL: <input type="number" name="stuffed-xlarge" min="0"></label>
+                                    </div>
+                                </div>
+                                <div class="dough-type card-inner">
+                                    <h3>San Francisco</h3>
+                                    <div class="size-inputs">
+                                        <label>S: <input type="number" name="sf-small" min="0"></label>
+                                        <label>M: <input type="number" name="sf-medium" min="0"></label>
+                                        <label>L: <input type="number" name="sf-large" min="0"></label>
+                                        <label>XL: <input type="number" name="sf-xlarge" min="0"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="submit" class="action-button primary-button">
+                                    <i class="fas fa-save"></i> Salvează Modificările
+                                </button>
+                                <button type="button" class="action-button reset-button cancel-edit">
+                                    <i class="fas fa-times"></i> Anulează
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="predictions" class="tab-content card">
+                <h2>Predicții Cocă Necesară</h2>
+                <div class="button-group">
+                    <button id="generateButton" class="generate-button action-button">
+                        <span class="button-text"><i class="fas fa-magic"></i> Generează</span>
+                        <span class="loader hidden"></span>
+                    </button>
+                </div>
+                <div class="predictions-dashboard">
+                    <div class="predictions-chart"></div>
+                    <div class="predictions-details">
+                        <div class="stats-summary">
+                            <div class="stat-card" data-tooltip="Total cocă necesară pentru ziua următoare">
+                                <h4>Dough Batches</h4>
+                                <p class="total-dough">0</p>
+                            </div>
+                            <div class="stat-card" data-tooltip="Comparație cu săptămâna anterioară">
+                                <h4>Tendință</h4>
+                                <p class="trend-indicator">-</p>
+                            </div>
+                        </div>
+                        <div class="prediction-status">
+                            <span id="predictionTimestamp" class="timestamp"></span>
+                        </div>
+                        <div id="detailedPredictions" class="detailed-predictions">
+                            <!-- Existing prediction content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingOverlay" class="loading-overlay hidden">
+            <div class="loader"></div>
+            <p>Se procesează datele...</p>
+        </div>
+    </div>
+
+    <script src="js/dataManager.js"></script>
+    <script src="js/doughCalculator.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
