@@ -482,31 +482,35 @@ select:focus {
 .tabs {
     display: flex;
     gap: 1rem;
-    margin-bottom: 2rem;
-    justify-content: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(220, 0, 0, 0.1);
+    padding-bottom: 0.5rem;
 }
 
 .tab-button {
-    padding: 1rem 2rem;
+    background: transparent;
     border: none;
-    background: #fff;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
+    padding: 0.75rem 1.5rem;
     color: #4a5568;
+    font-weight: 500;
+    cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    position: relative;
 }
 
 .tab-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: #dc0000;
+    background: rgba(220, 0, 0, 0.05);
 }
 
 .tab-button.active {
-    background: #dc0000;
-    color: white;
+    color: #dc0000;
+    background: rgba(220, 0, 0, 0.1);
+}
+
+.tab-button i {
+    margin-right: 0.5rem;
 }
 
 .tab-content {
@@ -515,6 +519,12 @@ select:focus {
 
 .tab-content.active {
     display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Compact form styling */
@@ -779,4 +789,137 @@ select:focus {
     border: 1px solid rgba(220, 0, 0, 0.2);
     border-radius: 0.5rem;
     font-size: 0.95rem;
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 768px) {
+    .app-wrapper {
+        padding: 0.5rem;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    .app-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .app-header h1 i {
+        font-size: 2rem;
+    }
+
+    .card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .tabs {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        margin: -10px -10px 10px -10px;
+        padding: 10px;
+    }
+
+    .tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-button {
+        flex: 0 0 auto;
+        padding: 0.5rem 1rem;
+        white-space: nowrap;
+        font-size: 0.9rem;
+    }
+
+    .selectors-wrapper {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .date-selector, .week-selector {
+        width: 100%;
+    }
+
+    .action-buttons {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+
+    .action-buttons .action-button {
+        min-width: 48%;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .dough-types-wrapper {
+        gap: 0.5rem;
+    }
+
+    .card-inner {
+        padding: 1rem;
+    }
+
+    .size-inputs {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .size-inputs label {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    input[type="number"] {
+        width: 60px;
+        padding: 0.4rem;
+    }
+
+    select {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 0.25rem;
+        padding: 0.5rem;
+    }
+
+    .predictions-dashboard {
+        flex-direction: column;
+    }
+
+    .stats-summary {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .stat-card {
+        padding: 0.75rem;
+    }
+
+    /* Improve touch targets */
+    button, select, input {
+        min-height: 44px;
+    }
+}
+
+/* Additional improvements for very small screens */
+@media screen and (max-width: 380px) {
+    .size-inputs {
+        grid-template-columns: 1fr;
+    }
+
+    .app-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .action-buttons .action-button {
+        width: 100%;
+    }
 } 
