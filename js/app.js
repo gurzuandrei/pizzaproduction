@@ -49,30 +49,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateHistoricalDisplay() {
-        const selectedDay = daySelector.value;
+        const selectedDay = document.getElementById('historyDayFilter').value;
         const historicalData = dataManager.getDataForDay(selectedDay);
         const historicalDisplay = document.getElementById('historicalDisplay');
         
-        historicalDisplay.innerHTML = historicalData
-            .map(([date, data]) => `
-                <div class="historical-row" data-date="${date}">
-                   <div class="historical-data">
-                       <span class="date-label">${new Date(date).toLocaleDateString('ro-RO')}</span>
-                       ${Object.entries(data)
-                           .map(([key, value]) => `<span>${key.split('-').join(' ')}: ${value}</span>`)
-                           .join('')}
-                   </div>
-                   <div class="row-actions">
-                       <button class="edit-button" onclick="editHistoricalData('${date}')">
-                           <i class="fas fa-edit"></i> Editează
-                       </button>
-                       <button class="delete-button" onclick="deleteHistoricalData('${date}')">
-                           <i class="fas fa-trash-alt"></i> Șterge
-                       </button>
-                   </div>
-                </div>
-            `)
-            .join('');
+        historicalDisplay.innerHTML = `
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Total Batches</th>
+                        <th colspan="4">Pan Pizza</th>
+                        <th colspan="3">Stuffed Crust</th>
+                        <th colspan="4">San Francisco</th>
+                        <th>Actions</th>
+                    </tr>
+                    <tr class="sub-header">
+                        <th></th>
+                        <th></th>
+                        <th>S</th>
+                        <th>M</th>
+                        <th>L</th>
+                        <th>XL</th>
+                        <th>M</th>
+                        <th>L</th>
+                        <th>XL</th>
+                        <th>S</th>
+                        <th>M</th>
+                        <th>L</th>
+                        <th>XL</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${historicalData.map(([timestamp, data]) => {
+                        const date = new Date(timestamp);
+                        const formattedDate = date.toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        return `
+                        <tr>
+                            <td>${formattedDate}</td>
+                            <td>${data.totalBatches}</td>
+                            <td>${data.predictions.pan.small}</td>
+                            <td>${data.predictions.pan.medium}</td>
+                            <td>${data.predictions.pan.large}</td>
+                            <td>${data.predictions.pan.xlarge}</td>
+                            <td>${data.predictions.stuffed.medium}</td>
+                            <td>${data.predictions.stuffed.large}</td>
+                            <td>${data.predictions.stuffed.xlarge}</td>
+                            <td>${data.predictions.sanFrancisco.small}</td>
+                            <td>${data.predictions.sanFrancisco.medium}</td>
+                            <td>${data.predictions.sanFrancisco.large}</td>
+                            <td>${data.predictions.sanFrancisco.xlarge}</td>
+                            <td>
+                                <button class="delete-button" onclick="deletePredictionData('${timestamp}')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `}).join('')}
+                </tbody>
+            </table>
+        `;
     }
 
     function loadFormData() {
@@ -137,21 +179,40 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             updateHistoricalDisplay();
-            showNotification('Date salvate cu succes!', 'success');
+            showNotification('Data saved successfully!', 'success');
         } catch (error) {
-            showNotification('Eroare la salvarea datelor!', 'error');
+            showNotification('Error saving data!', 'error');
             console.error(error);
         }
     }
 
     function generatePredictions() {
-        const selectedDay = daySelector.value;
         const historicalData = dataManager.getLastThreeWeeksSales();
         const calculator = new DoughCalculator(historicalData);
         
         try {
             const predictions = calculator.getPrediction();
             const totalBatches = calculator.getTotalDough();
+            
+            // Get the selected day and week
+            const selectedDay = parseInt(daySelector.value);
+            const selectedWeek = parseInt(weekSelector.value);
+            
+            // Calculate the target date based on selected day and week
+            const today = new Date();
+            const targetDate = new Date(today);
+            targetDate.setDate(today.getDate() - (selectedWeek * 7));
+            
+            // Adjust to the selected day
+            const currentDay = targetDate.getDay();
+            const daysToAdd = (selectedDay - currentDay + 7) % 7;
+            targetDate.setDate(targetDate.getDate() + daysToAdd);
+            
+            // Add one more day since predictions are for the next day
+            targetDate.setDate(targetDate.getDate() + 1);
+            
+            // Save predictions with the correct date
+            dataManager.savePrediction(predictions, totalBatches, targetDate);
             
             document.querySelector('.total-dough').textContent = totalBatches;
             document.querySelector('.trend-indicator').textContent = calculateTrend(historicalData);
@@ -217,18 +278,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             
-            document.getElementById('predictionTimestamp').textContent = 
-                `Ultima predicție: ${new Date().toLocaleString('ro-RO')}`;
+            const formattedDate = targetDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
             
-            showNotification('Predicții generate cu succes!', 'success');
+            document.getElementById('predictionTimestamp').textContent = 
+                `Prediction for: ${formattedDate}`;
+            
+            updateHistoricalDisplay();
+            
+            showNotification('Predictions generated successfully!', 'success');
         } catch (error) {
-            console.error('Eroare la generarea predicțiilor:', error);
-            showNotification('Eroare la generarea predicțiilor', 'error');
+            console.error('Error generating predictions:', error);
+            showNotification('Error generating predictions', 'error');
         }
     }
 
     function resetAllData() {
-        if (confirm('Ești sigur că vrei să ștergi toate datele salvate? Această acțiune nu poate fi anulată.')) {
+        if (confirm('Are you sure you want to delete all saved data? This action cannot be undone.')) {
             try {
                 dataManager.resetAllData();
                 for (let week = 1; week <= 4; week++) {
@@ -240,34 +310,74 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('predictionTimestamp').textContent = '';
                 document.querySelector('.total-dough').textContent = '0';
                 document.querySelector('.trend-indicator').textContent = '-';
-                showNotification('Toate datele au fost șterse', 'success');
+                showNotification('All data has been deleted', 'success');
             } catch (error) {
-                showNotification('Eroare la ștergerea datelor', 'error');
+                showNotification('Error deleting data', 'error');
                 console.error(error);
             }
         }
     }
 
-    function showNotification(message, type) {
-        const notification = document.getElementById('notification');
-        notification.textContent = message;
+    function showNotification(message, type, duration = 3000) {
+        const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        notification.classList.remove('hidden');
+        notification.textContent = message;
+        document.body.appendChild(notification);
         
         setTimeout(() => {
             notification.classList.add('hidden');
-        }, 3000);
+            setTimeout(() => notification.remove(), 300);
+        }, duration);
     }
 
+    // Funcție pentru salvarea automată a datelor
+    function autoSaveData() {
+        const selectedDay = daySelector.value;
+        const selectedWeek = parseInt(weekSelector.value);
+        
+        const today = new Date();
+        const targetDate = new Date(today);
+        targetDate.setDate(today.getDate() - (selectedWeek * 7));
+        
+        const currentDay = targetDate.getDay();
+        const daysToAdd = (selectedDay - currentDay + 7) % 7;
+        targetDate.setDate(targetDate.getDate() + daysToAdd);
+
+        const dateString = targetDate.toISOString().split('T')[0];
+        
+        const formData = new FormData(salesForm);
+        const salesData = {};
+        
+        formData.forEach((value, key) => {
+            salesData[key] = parseInt(value) || 0;
+        });
+        
+        try {
+            dataManager.saveDailySales(dateString, salesData);
+            updateHistoricalDisplay();
+            showNotification('Data saved automatically', 'success', 1000);
+        } catch (error) {
+            console.error(error);
+            showNotification('Error saving data', 'error');
+        }
+    }
+
+    // Adăugăm event listener pentru toate input-urile de număr
+    salesForm.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('change', autoSaveData);
+        input.addEventListener('blur', autoSaveData);
+    });
+
+    // Adăugăm event listener pentru selectoare
     daySelector.addEventListener('change', () => {
-        updateHistoricalDisplay();
         loadFormData();
+        updateHistoricalDisplay();
     });
 
     weekSelector.addEventListener('change', () => {
         salesForm.reset();
         loadFormData();
-        currentWeek = parseInt(weekSelector.value);
+        updateHistoricalDisplay();
     });
 
     salesForm.addEventListener('submit', saveSalesData);
@@ -348,10 +458,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 dataManager.saveDailySales(date, salesData);
                 updateHistoricalDisplay();
-                showNotification('Modificările au fost salvate cu succes!', 'success');
+                showNotification('Modifications saved successfully!', 'success');
                 closeModal();
             } catch (error) {
-                showNotification('Eroare la salvarea modificărilor', 'error');
+                showNotification('Error saving modifications', 'error');
                 console.error(error);
             }
         };
@@ -372,12 +482,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const historyDayFilter = document.getElementById('historyDayFilter');
     historyDayFilter.addEventListener('change', () => {
-        const selectedFilter = historyDayFilter.value;
-        if (selectedFilter === 'all') {
-            daySelector.value = '1';
-        } else {
-            daySelector.value = selectedFilter;
-        }
         updateHistoricalDisplay();
     });
 
@@ -386,38 +490,34 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFormData();
 
     function calculateTrend(historicalData) {
-        if (historicalData.length < 14) return '-'; // Avem nevoie de cel puțin 2 săptămâni
+        if (!Array.isArray(historicalData) || historicalData.length < 14) return '-';
 
-        const lastWeek = historicalData.slice(0, 7);
-        const prevWeek = historicalData.slice(7, 14);
-        
-        let lastWeekTotal = 0;
-        let prevWeekTotal = 0;
+        const calculateTotal = (data) => {
+            return data.reduce((total, day) => {
+                if (!day || typeof day !== 'object') return total;
+                return total + Object.values(day).reduce((sum, value) => 
+                    sum + (parseInt(value) || 0), 0);
+            }, 0);
+        };
 
-        // Calculăm totalurile pentru fiecare săptămână
-        [lastWeek, prevWeek].forEach((week, weekIndex) => {
-            week.forEach(day => {
-                Object.entries(day).forEach(([_, value]) => {
-                    const count = parseInt(value) || 0;
-                    if (weekIndex === 0) {
-                        lastWeekTotal += count;
-                    } else {
-                        prevWeekTotal += count;
-                    }
-                });
-            });
-        });
+        const lastWeekTotal = calculateTotal(historicalData.slice(0, 7));
+        const prevWeekTotal = calculateTotal(historicalData.slice(7, 14));
 
         if (prevWeekTotal === 0) return '-';
 
         const change = ((lastWeekTotal - prevWeekTotal) / prevWeekTotal) * 100;
         
-        // Returnăm doar procentul cu semn
-        if (change > 0) {
-            return `+${change.toFixed(1)}%`;
-        } else if (change < 0) {
-            return `${change.toFixed(1)}%`;
-        }
-        return `0%`;
+        if (change > 0) return `+${change.toFixed(1)}%`;
+        if (change < 0) return `${change.toFixed(1)}%`;
+        return '0%';
     }
+
+    // Funcție pentru ștergerea unei predicții din istoric
+    window.deletePredictionData = function(timestamp) {
+        if (confirm('Are you sure you want to delete this prediction from history?')) {
+            dataManager.deletePredictionData(timestamp);
+            updateHistoricalDisplay();
+            showNotification('Prediction deleted successfully', 'success');
+        }
+    };
 }); 

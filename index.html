@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Predicție Cocă Pizza</title>
+    <title>Pizza Dough Prediction</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -12,58 +12,54 @@
     <div class="app-wrapper">
         <div class="container">
             <header class="app-header">
-                <h1><i class="fas fa-pizza-slice"></i> Predicție Cocă Pizza</h1>
+                <h1><i class="fas fa-pizza-slice"></i> Pizza Dough Prediction</h1>
             </header>
             
             <div id="notification" class="notification hidden"></div>
             
             <div class="tabs">
                 <button class="tab-button active" data-tab="input">
-                    <i class="fas fa-edit"></i> Introducere Date
+                    <i class="fas fa-edit"></i> Data Entry
                 </button>
                 <button class="tab-button" data-tab="history">
-                    <i class="fas fa-history"></i> Istoric
+                    <i class="fas fa-history"></i> History
                 </button>
                 <button class="tab-button" data-tab="predictions">
-                    <i class="fas fa-chart-line"></i> Predicții
+                    <i class="fas fa-chart-line"></i> Predictions
                 </button>
             </div>
             
             <div id="input" class="tab-content card active">
-                <h2>Introducere Date Vânzări</h2>
+                <h2>Sales Data Entry</h2>
                 <div class="selectors-wrapper">
                     <div class="date-selector">
                         <label>
-                            <i class="fas fa-calendar-day"></i> Ziua:
+                            <i class="fas fa-calendar-day"></i> Day:
                             <select id="daySelector">
-                                <option value="1">Luni</option>
-                                <option value="2">Marți</option>
-                                <option value="3">Miercuri</option>
-                                <option value="4">Joi</option>
-                                <option value="5">Vineri</option>
-                                <option value="6">Sâmbătă</option>
-                                <option value="0">Duminică</option>
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
+                                <option value="0">Sunday</option>
                             </select>
                         </label>
                     </div>
                     <div class="week-selector">
                         <label>
-                            <i class="fas fa-calendar-week"></i> Săptămâna:
+                            <i class="fas fa-calendar-week"></i> Week:
                             <select id="weekSelector">
-                                <option value="1">Săptămâna anterioară</option>
-                                <option value="2">2 săptămâni în urmă</option>
-                                <option value="3">3 săptămâni în urmă</option>
-                                <option value="4">4 săptămâni în urmă</option>
+                                <option value="1">Previous week</option>
+                                <option value="2">2 weeks ago</option>
+                                <option value="3">3 weeks ago</option>
+                                <option value="4">4 weeks ago</option>
                             </select>
                         </label>
                     </div>
                     <div class="action-buttons">
-                        <button type="submit" form="salesForm" class="action-button primary-button">
-                            <span class="button-text"><i class="fas fa-save"></i> Salvează</span>
-                            <span class="loader hidden"></span>
-                        </button>
                         <button id="resetButton" class="action-button reset-button">
-                            <span class="button-text"><i class="fas fa-trash-alt"></i> Resetează</span>
+                            <span class="button-text"><i class="fas fa-trash-alt"></i> Reset</span>
                             <span class="loader hidden"></span>
                         </button>
                     </div>
@@ -104,25 +100,18 @@
             </div>
 
             <div id="history" class="tab-content card">
-                <h2>Date Istorice</h2>
-                <div class="data-status">
-                    <span id="lastUpdate" class="last-update"></span>
-                    <button id="refreshData" class="refresh-button">
-                        <span class="button-text"><i class="fas fa-sync-alt"></i> Reîmprospătează</span>
-                        <span class="loader hidden"></span>
-                    </button>
-                </div>
+                <h2>Historical Data</h2>
                 <div class="history-controls">
                     <div class="history-filters">
                         <select id="historyDayFilter">
-                            <option value="all">Toate zilele</option>
-                            <option value="1">Luni</option>
-                            <option value="2">Marți</option>
-                            <option value="3">Miercuri</option>
-                            <option value="4">Joi</option>
-                            <option value="5">Vineri</option>
-                            <option value="6">Sâmbătă</option>
-                            <option value="0">Duminică</option>
+                            <option value="all">All days</option>
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
+                            <option value="0">Sunday</option>
                         </select>
                     </div>
                 </div>
@@ -132,7 +121,7 @@
                 <div id="editModal" class="modal hidden">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3>Editare Date</h3>
+                            <h3>Edit Date</h3>
                             <button class="close-modal">&times;</button>
                         </div>
                         <form id="editForm" class="compact-form">
@@ -169,10 +158,10 @@
                             </div>
                             <div class="modal-actions">
                                 <button type="submit" class="action-button primary-button">
-                                    <i class="fas fa-save"></i> Salvează Modificările
+                                    <i class="fas fa-save"></i> Save Changes
                                 </button>
                                 <button type="button" class="action-button reset-button cancel-edit">
-                                    <i class="fas fa-times"></i> Anulează
+                                    <i class="fas fa-times"></i> Cancel
                                 </button>
                             </div>
                         </form>
@@ -181,10 +170,10 @@
             </div>
 
             <div id="predictions" class="tab-content card">
-                <h2>Predicții Cocă Necesară</h2>
+                <h2>Required Dough Predictions</h2>
                 <div class="button-group">
                     <button id="generateButton" class="generate-button action-button">
-                        <span class="button-text"><i class="fas fa-magic"></i> Generează</span>
+                        <span class="button-text"><i class="fas fa-magic"></i> Generate</span>
                         <span class="loader hidden"></span>
                     </button>
                 </div>
@@ -192,12 +181,12 @@
                     <div class="predictions-chart"></div>
                     <div class="predictions-details">
                         <div class="stats-summary">
-                            <div class="stat-card" data-tooltip="Total cocă necesară pentru ziua următoare">
+                            <div class="stat-card" data-tooltip="Total dough needed for next day">
                                 <h4>Dough Batches</h4>
                                 <p class="total-dough">0</p>
                             </div>
-                            <div class="stat-card" data-tooltip="Comparație cu săptămâna anterioară">
-                                <h4>Tendință</h4>
+                            <div class="stat-card" data-tooltip="Comparison with previous week">
+                                <h4>Trend</h4>
                                 <p class="trend-indicator">-</p>
                             </div>
                         </div>
@@ -205,7 +194,7 @@
                             <span id="predictionTimestamp" class="timestamp"></span>
                         </div>
                         <div id="detailedPredictions" class="detailed-predictions">
-                            <!-- Existing prediction content -->
+                            <!-- Prediction content will be inserted here -->
                         </div>
                     </div>
                 </div>
@@ -214,7 +203,7 @@
 
         <div id="loadingOverlay" class="loading-overlay hidden">
             <div class="loader"></div>
-            <p>Se procesează datele...</p>
+            <p>Processing data...</p>
         </div>
     </div>
 
