@@ -1232,4 +1232,29 @@ select:focus {
     .delete-button {
         padding: 0.75rem !important;
     }
+}
+
+.heart-button {
+    background: none;
+    border: none;
+    color: #dc0000;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform 0.3s ease;
+    margin-left: 1rem;
+}
+
+.heart-button:hover {
+    transform: scale(1.2);
+}
+
+.heart-button i {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 } 
